@@ -1,3 +1,9 @@
+Notes on command line for executing pthreads.
 Execute the pthreads programs by using
 gcc multithread_p1.c -o mp1 -lpthread
+
+Notes on matrix.c
+Currently unable to run 1024 size for matrix.c due to a segmentation fault (core dumped) error.
+Don't think I can run it on my vm but works for 128, 256, and 512. Therefore safe to assume it
+may work for 1024.
 
