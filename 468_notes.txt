@@ -1,0 +1,3 @@
+Execute the pthreads programs by using
+gcc multithread_p1.c -o mp1 -lpthread
+
