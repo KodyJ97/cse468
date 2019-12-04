@@ -21,14 +21,14 @@ void func(int mat[SIZE][SIZE])
 			mat[i][j] = (rand() % (MAX_NUMBER + 1 - MIN_NUMBER) + MIN_NUMBER);
 }
 
-void *mygemm(int matA[SIZE][SIZE], int matB[SIZE][SIZE], int matC[SIZE][SIZE])
+//void *mygemm(int matA[SIZE][SIZE], int matB[SIZE][SIZE], int matC[SIZE][SIZE])
+void *mygemm(int *vargp_a[SIZE][SIZE], int *vargp_b[SIZE][SIZE], int *vargp_c[SIZE][SIZE])
 {
 	// Matrix Multiplication
-	int count = 0;
 	for(int i = 0; i < SIZE; i++)
 		for(int j = 0; j < SIZE; j++)
 			for(int k = 0; k < SIZE; k++)
-				matC[i][j] += matA[i][k] * matB[k][j];
+				vargp_c[i][j] += vargp_a[i][k] * vargp_b[k][j];
 }
 
 void print_Matrix(int mat[SIZE][SIZE])
@@ -58,9 +58,9 @@ int main()
 	// Create threads
 	pthread_t tid; 
     for (int i = 0; i < THREAD_COUNT; i++) 
-        pthread_create(&tid, NULL, mygemm(), (void *)&tid); 
+        pthread_create(&tid, NULL, mygemm, (void *)&tid); 
 	//mygemm(matA, matB, matC);
-	
+	pthread_exit(NULL);
 	// End Time
 	gettimeofday(&stop, NULL);
 	
