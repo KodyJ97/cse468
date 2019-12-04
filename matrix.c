@@ -22,7 +22,7 @@ void func(int mat[SIZE][SIZE])
 }
 
 //void *mygemm(int matA[SIZE][SIZE], int matB[SIZE][SIZE], int matC[SIZE][SIZE])
-void *mygemm(int *vargp_a[SIZE][SIZE], int *vargp_b[SIZE][SIZE], int *vargp_c[SIZE][SIZE])
+void *mygemm(void *vargp)
 {
 	// Matrix Multiplication
 	for(int i = 0; i < SIZE; i++)
@@ -56,11 +56,18 @@ int main()
 	gettimeofday(&start, NULL);
 	
 	// Create threads
-	pthread_t tid; 
-    for (int i = 0; i < THREAD_COUNT; i++) 
-        pthread_create(&tid, NULL, mygemm, (void *)&tid); 
+	pthread_t tid[THREAD_COUNT];
+	int i, j;
+    for (i = 0; i < THREAD_COUNT; i++) 
+        pthread_create(&tid[i], NULL, mygemm, (void *)&tid);
+        
+    for (j = 0; i < THREAD_COUNT; i++) 
+		pthread_join(tid[j], NULL);
+		
 	//mygemm(matA, matB, matC);
+	
 	pthread_exit(NULL);
+	
 	// End Time
 	gettimeofday(&stop, NULL);
 	
