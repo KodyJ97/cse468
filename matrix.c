@@ -2,6 +2,7 @@
 #include <stdlib.h> 
 #include <pthread.h>
 #include <sys/time.h>
+#include <unistd.h>  
 
 // Matrix column and row value. Possible sizes: 128, 256, 512, and 1024.
 #define SIZE 128
@@ -20,7 +21,7 @@ void func(int mat[SIZE][SIZE])
 			mat[i][j] = (rand() % (MAX_NUMBER + 1 - MIN_NUMBER) + MIN_NUMBER);
 }
 
-void mygemm(int matA[SIZE][SIZE], int matB[SIZE][SIZE], int matC[SIZE][SIZE])
+void *mygemm(int matA[SIZE][SIZE], int matB[SIZE][SIZE], int matC[SIZE][SIZE])
 {
 	// Matrix Multiplication
 	int count = 0;
@@ -41,18 +42,32 @@ void print_Matrix(int mat[SIZE][SIZE])
 
 int main()
 {
+	// Instantiate some variables
 	struct timeval start, stop;
-	printf("matrix.c\n");
 	int matA[SIZE][SIZE];
 	int matB[SIZE][SIZE];
 	int matC[SIZE][SIZE];
+	
+	// Randomize the matrixes A and B
 	func(matA);
 	func(matB);
+	
+	// Start time
 	gettimeofday(&start, NULL);
-	mygemm(matA, matB, matC);
+	
+	// Create threads
+	pthread_t tid; 
+    for (int i = 0; i < THREAD_COUNT; i++) 
+        pthread_create(&tid, NULL, mygemm(), (void *)&tid); 
+	//mygemm(matA, matB, matC);
+	
+	// End Time
 	gettimeofday(&stop, NULL);
+	
+	// Print Matrix if needed.
 	//print_Matrix(matC);
-	// Execution time
+	
+	// Execution time formula for milliseconds
 	printf("Time of execution in milliseconds: %lu\n", (stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec);
 	return 0;
 }
