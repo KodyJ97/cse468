@@ -13,24 +13,11 @@
 #define MIN_NUMBER 1
 #define MAX_NUMBER 5
 
-void func(int mat[SIZE][SIZE])
-{
-	int i,j;
-	for(i = 0; i < SIZE; i++)
-		for(j = 0; j < SIZE; j++)
-			mat[i][j] = (rand() % (MAX_NUMBER + 1 - MIN_NUMBER) + MIN_NUMBER);
-}
-
-//void *mygemm(int matA[SIZE][SIZE], int matB[SIZE][SIZE], int matC[SIZE][SIZE])
-void *mygemm(void *vargp)
-{
-	// Matrix Multiplication
-	for(int i = 0; i < SIZE; i++)
-		for(int j = 0; j < SIZE; j++)
-			for(int k = 0; k < SIZE; k++)
-				vargp_c[i][j] += vargp_a[i][k] * vargp_b[k][j];
-}
-
+int matA[SIZE][SIZE];
+int matB[SIZE][SIZE];
+int matC[SIZE][SIZE];
+int step_test = 0;
+	
 void print_Matrix(int mat[SIZE][SIZE])
 {
 	int i,j;
@@ -39,14 +26,28 @@ void print_Matrix(int mat[SIZE][SIZE])
 			printf("%d\n", mat[i][j]);
 }
 
+void func(int mat[SIZE][SIZE])
+{
+	int i,j;
+	for(i = 0; i < SIZE; i++)
+		for(j = 0; j < SIZE; j++)
+			mat[i][j] = (rand() % (MAX_NUMBER + 1 - MIN_NUMBER) + MIN_NUMBER);
+}
+
+void *mygemm(void *vargp)
+{
+	int test = step_test;
+	// Matrix Multiplication
+	for(int i = 0; i < SIZE; i++)
+		for(int j = 0; j < SIZE; j++)
+			for(int k = 0; k < SIZE; k++)
+				matC[i][j] += matA[i][k] * matB[k][j];
+}
 
 int main()
 {
 	// Instantiate some variables
 	struct timeval start, stop;
-	int matA[SIZE][SIZE];
-	int matB[SIZE][SIZE];
-	int matC[SIZE][SIZE];
 	
 	// Randomize the matrixes A and B
 	func(matA);
@@ -57,11 +58,10 @@ int main()
 	
 	// Create threads
 	pthread_t tid[THREAD_COUNT];
-	int i, j;
-    for (i = 0; i < THREAD_COUNT; i++) 
-        pthread_create(&tid[i], NULL, mygemm, (void *)&tid);
+	for (int i = 0; i < THREAD_COUNT; i++) 
+		pthread_create(&tid[i], NULL, mygemm, (void*)&tid);
         
-    for (j = 0; i < THREAD_COUNT; i++) 
+    for (int j = 0; j < THREAD_COUNT; j++) 
 		pthread_join(tid[j], NULL);
 		
 	//mygemm(matA, matB, matC);
