@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Make mp1
+chmod +x matrix.c
 gcc matrix.c -o mp1 -lpthread
 echo "Made mp1"
 
