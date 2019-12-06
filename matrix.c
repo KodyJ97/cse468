@@ -4,6 +4,7 @@
 #include <time.h>
 #include <unistd.h>  
 
+// Changed to take in arguments
 // Matrix column and row value. Possible sizes: 128, 256, 512, and 1024.
 //#define SIZE 1024
 // Thread count. Can be 1, 2, 4, 8, or 16. Defined at runtime.
@@ -47,12 +48,9 @@ void func(int mat[SIZE][SIZE])
 void* mygemm128(void* vargp)
 {
 	int* thread_no = vargp;
-
-	printf("Thread %d: Starting mygemm\n", *thread_no);
 	for (int i = 0; i < (128 / THREAD_COUNT); i++) {
 		int i_index = i + ((128 / THREAD_COUNT) * *thread_no);
 		if (i == 0 || i == ((128 / THREAD_COUNT) - 1)) {
-			printf("Thread %d: index = %d \t i_index = %d\n", *thread_no, i, i_index);
 		}
 		for (int j = 0; j < 128; j++) {
 			for (int k = 0; k < 128; k++) {
@@ -60,20 +58,15 @@ void* mygemm128(void* vargp)
 			}
 		}
 	}
-
-	printf("Thread %d: Ending mygemm and terminating threads\n", *thread_no);
 	pthread_exit(NULL);
 }
 
 void* mygemm256(void* vargp)
 {
 	int* thread_no = vargp;
-
-	printf("Thread %d: Starting mygemm\n", *thread_no);
 	for (int i = 0; i < (256 / THREAD_COUNT); i++) {
 		int i_index = i + ((256 / THREAD_COUNT) * *thread_no);
 		if (i == 0 || i == ((256 / THREAD_COUNT) - 1)) {
-			printf("Thread %d: index = %d \t i_index = %d\n", *thread_no, i, i_index);
 		}
 		for (int j = 0; j < 256; j++) {
 			for (int k = 0; k < 256; k++) {
@@ -81,20 +74,15 @@ void* mygemm256(void* vargp)
 			}
 		}
 	}
-
-	printf("Thread %d: Ending mygemm and terminating threads\n", *thread_no);
 	pthread_exit(NULL);
 }
 
 void* mygemm512(void* vargp)
 {
 	int* thread_no = vargp;
-
-	printf("Thread %d: Starting mygemm\n", *thread_no);
 	for (int i = 0; i < (512 / THREAD_COUNT); i++) {
 		int i_index = i + ((512 / THREAD_COUNT) * *thread_no);
 		if (i == 0 || i == ((512 / THREAD_COUNT) - 1)) {
-			printf("Thread %d: index = %d \t i_index = %d\n", *thread_no, i, i_index);
 		}
 		for (int j = 0; j < 512; j++) {
 			for (int k = 0; k < 512; k++) {
@@ -102,20 +90,15 @@ void* mygemm512(void* vargp)
 			}
 		}
 	}
-
-	printf("Thread %d: Ending mygemm and terminating threads\n", *thread_no);
 	pthread_exit(NULL);
 }
 
 void* mygemm1024(void* vargp)
 {
 	int* thread_no = vargp;
-
-	printf("Thread %d: Starting mygemm\n", *thread_no);
 	for (int i = 0; i < (1024 / THREAD_COUNT); i++) {
 		int i_index = i + ((1024 / THREAD_COUNT) * *thread_no);
 		if (i == 0 || i == ((1024 / THREAD_COUNT) - 1)) {
-			printf("Thread %d: index = %d \t i_index = %d\n", *thread_no, i, i_index);
 		}
 		for (int j = 0; j < 1024; j++) {
 			for (int k = 0; k < 1024; k++) {
@@ -123,8 +106,6 @@ void* mygemm1024(void* vargp)
 			}
 		}
 	}
-
-	printf("Thread %d: Ending mygemm and terminating threads\n", *thread_no);
 	pthread_exit(NULL);
 }
 
@@ -134,12 +115,8 @@ int main(int argc, char* argv[])
 	clock_t startClock, endClock;
 
 	if (argc > 1) {
-
-		printf("THREAD_COUNT = %s \t SIZE = %s\n", argv[1], argv[2]);
-
 		sscanf(argv[1], "%d", &THREAD_COUNT);
 		sscanf(argv[2], "%d", &SIZE);
-
 		printf("THREAD_COUNT = %d \t SIZE = %d\n", THREAD_COUNT, SIZE);
 
 		// Randomize the matrixes A and B
@@ -164,7 +141,6 @@ int main(int argc, char* argv[])
 
 		// Start time
 		startClock = clock();
-		printf("Starting Time = %ld \n", startClock);
 
 		// Create threads
 		printf("Creating Threads\n");
@@ -195,7 +171,6 @@ int main(int argc, char* argv[])
 
 		// End Time
 		endClock = clock();
-		printf("Ending Time = %ld \n", endClock);
 
 		// Print Matrix if needed. The output will be very long so you'll lose any other debug printouts. Just leave it commented out unless you need it.
 		/*
@@ -203,7 +178,7 @@ int main(int argc, char* argv[])
 		*/
 
 		// Execution time formula for milliseconds
-		printf("Total Execution Time = %f ms \n", ((double)((endClock - startClock) / 100)));
+		printf("Total Execution Time = %ld ms \n", (((endClock - startClock) / 1000)));
 	}
 	return 0;
 }
