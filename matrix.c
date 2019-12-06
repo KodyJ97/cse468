@@ -1,12 +1,13 @@
-#include <stdio.h> 
+#include <stdio.h>
 #include <stdlib.h> 
 #include <pthread.h>
 #include <time.h>
 #include <unistd.h>  
 
 // Matrix column and row value. Possible sizes: 128, 256, 512, and 1024.
-#define SIZE 128
-#define THREAD_COUNT 2
+#define SIZE 1024
+// Thread count. Can be 1, 2, 4, 8, or 16.
+#define THREAD_COUNT 16
 
 // MAX_NUMBER and MIN_NUMBER are specifying the range of the random numbers
 // generated for matrix A and matrix B.
@@ -17,7 +18,6 @@
 int matA[SIZE][SIZE];
 int matB[SIZE][SIZE];
 int matC[SIZE][SIZE];
-int step_test = 0;
 
 void print_Matrix(int mat[SIZE][SIZE])
 {
@@ -45,15 +45,24 @@ void func(int mat[SIZE][SIZE])
 
 void* mygemm(void* vargp)
 {
-	// Geeks for geeks does a weird thing here with steps i dont think
-	// we do it this way
-	printf("Thread %ld: Starting mygemm\n", pthread_self());
-	for (int i = 0; i < SIZE; i++)
-		for (int j = 0; j < SIZE; j++)
-			for (int k = 0; k < SIZE; k++)
-				matC[i][j] += matA[i][k] * matB[k][j];
-	printf("Thread %ld: Ending mygemm and terminating threads\n", pthread_self());
-	// Terminate thread here?
+	int* thread_no = vargp;
+	
+	printf("Thread %d: Starting mygemm\n", *thread_no);
+	for (int i = 0; i < (SIZE / THREAD_COUNT); i++) {
+		int i_index = i + ((SIZE / THREAD_COUNT) * *thread_no);
+		
+		// For Debugging only
+		if (i == 0 || i == ((SIZE / THREAD_COUNT) - 1)) {
+			printf("Thread %d: index = %d \t i_index = %d\n", *thread_no, i, i_index);
+		}
+		
+		for (int j = 0; j < SIZE; j++) {
+			for (int k = 0; k < SIZE; k++) {
+				matC[i_index][j] += matA[i_index][k] * matB[k][j];
+			}
+		}
+	}
+	printf("Thread %d: Ending mygemm and terminating threads\n", *thread_no);
 	pthread_exit(NULL);
 }
 
@@ -73,8 +82,11 @@ int main()
 	// Create threads
 	printf("Creating Threads\n");
 	pthread_t tid[THREAD_COUNT];
-	for (int i = 0; i < THREAD_COUNT; i++)
-		pthread_create(&tid[i], NULL, mygemm, (void*)& tid);
+	int threadNo[THREAD_COUNT];
+	for (int i = 0; i < THREAD_COUNT; i++) {
+		threadNo[i] = i;
+		pthread_create(&tid[i], NULL, mygemm, &threadNo[i]);
+	}
 
 	// Join threads - wait for specified thread to terminate
 	printf("Terminating Threads\n");
